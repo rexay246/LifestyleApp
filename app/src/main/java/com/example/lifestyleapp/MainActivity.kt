@@ -3,28 +3,26 @@ package com.example.lifestyleapp
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
-import android.media.Image
-import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
+import java.io.FileOutputStream
+import java.lang.Exception
+import java.text.SimpleDateFormat
 import java.util.*
-
 class MainActivity : AppCompatActivity(), View.OnClickListener{
     private var mFullName: String? = null
     private var mFirstName: String? = null
     private var mLastName: String? = null
 
-    private var mTvFirstName: TextView? = null
-    private var mTvLastName: TextView? = null
     private var mButtonSubmit: Button? = null
     private var mEtFullName: EditText? = null
 
-    private var mSpinCountry: Spinner? = null
     private var mSpinCity: Spinner? = null
 
     private var mSliderValue: TextView? = null
@@ -47,21 +45,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
 
     private var mRadioGroup: RadioGroup? = null
 
-    private var mTvbmr: TextView? = null
     private var mMbr: Double? = null
-    private var mTvactivity: TextView? = null
     private var mCalorieIntake: Double? = null
 
     private var mButtonCamera: Button? = null
-    private var mIvPic: ImageView? = null
     private var mThumbnail: Bitmap? = null
+    private var mIvPic: ImageView? = null
+
+    private var mDisplayIntent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        mTvFirstName = findViewById(R.id.tv_fn_data)
-        mTvLastName = findViewById(R.id.tv_ln_data)
 
         mButtonSubmit = findViewById(R.id.button_submit)
         mButtonCamera = findViewById(R.id.btn_pp)
@@ -84,17 +79,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
         mRadioGroup = findViewById(R.id.radgroup)
         mRadioGroup!!.check(R.id.rad_male)
 
+        mIvPic = findViewById(R.id.iv_pp)
+
         mActivity = findViewById(R.id.spinner_activity_level)
 
         sliderListener()
 
         addItemsOnSpinner2();
 
-        mTvbmr = findViewById(R.id.tv_bmr_data)
-        mTvactivity = findViewById(R.id.tv_activity_data)
-
         mButtonSubmit!!.setOnClickListener(this)
         mButtonCamera!!.setOnClickListener(this)
+
+        mDisplayIntent = Intent(this, DisplayActivity::class.java)
     }
 
     private fun sliderListener() {
@@ -187,7 +183,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
                 //Check if the EditText string is empty
                 if (mFullName.isNullOrBlank()) {
                     //Complain that there's no text
-                    Toast.makeText(this@MainActivity, "Enter a name first!", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, "Enter a name first!", Toast.LENGTH_SHORT)
                         .show()
                 } else {
                     //Start an activity and pass the EditText string to it.
@@ -197,7 +193,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
                     when (splitstrings.size) {
                         1 -> {
                             Toast.makeText(
-                                this@MainActivity,
+                                this,
                                 "Enter both first and last name",
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -206,8 +202,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
                             mFirstName = splitstrings[0]
                             mLastName = splitstrings[splitstrings.size - 1]
 
-                            mTvFirstName!!.text = mFirstName
-                            mTvLastName!!.text = mLastName
+                            mDisplayIntent!!.putExtra("FN_Data", mFirstName)
+                            mDisplayIntent!!.putExtra("LN_Data", mLastName)
                         }
                     }
                 }
@@ -222,7 +218,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
                                 (4.7 * (12 * mFeet!! + mInch!!)) -
                                 (4.7 * mAge!!)
                 }
-                mTvbmr!!.text = String.format("%.3f", mMbr)
+                mDisplayIntent!!.putExtra("BMR_Data", mMbr.toString())
 
                 when (mActivityChoice) {
                     1 ->
@@ -236,7 +232,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
                     5 ->
                         mCalorieIntake = mMbr!! * 1.9
                 }
-                mTvactivity!!.text = String.format("%.3f", mCalorieIntake)
+                mDisplayIntent!!.putExtra("CALORIES_Data", mCalorieIntake.toString())
+                startActivity(mDisplayIntent)
 
 
             }
@@ -251,20 +248,44 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
         }
     }
     private val cameraActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
-        if(result.resultCode == RESULT_OK) {
-            mIvPic = findViewById<View>(R.id.iv_pp) as ImageView
-            //val extras = result.data!!.extras
-            //val thumbnailImage = extras!!["data"] as Bitmap?
+        if (result.resultCode == RESULT_OK) {
+            val extras = result.data!!.extras
+            mThumbnail = extras!!["data"] as Bitmap?
 
-            if (Build.VERSION.SDK_INT >= 33) {
-                mThumbnail = result.data!!.getParcelableExtra("data", Bitmap::class.java)
-                mIvPic!!.setImageBitmap(mThumbnail!!)
+            //Open a file and write to it
+            if (isExternalStorageWritable) {
+                val filePathString = saveImage(mThumbnail)
+                mIvPic!!.setImageBitmap(mThumbnail)
+                mDisplayIntent!!.putExtra("IMAGE_Data", filePathString)
+            } else {
+                Toast.makeText(this, "External storage not writable.", Toast.LENGTH_SHORT).show()
             }
-            else{
-                mThumbnail = result.data!!.getParcelableExtra<Bitmap>("data")
-                mIvPic!!.setImageBitmap(mThumbnail!!)
-            }
-
         }
     }
+
+    private fun saveImage(finalBitmap: Bitmap?): String {
+        val root = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val myDir = File("$root/saved_images")
+        myDir.mkdirs()
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val fname = "Thumbnail_$timeStamp.jpg"
+        val file = File(myDir, fname)
+        if (file.exists()) file.delete()
+        try {
+            val out = FileOutputStream(file)
+            finalBitmap!!.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            out.flush()
+            out.close()
+            Toast.makeText(this, "file saved!", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return file.absolutePath
+    }
+
+    private val isExternalStorageWritable: Boolean
+        get() {
+            val state = Environment.getExternalStorageState()
+            return Environment.MEDIA_MOUNTED == state
+        }
 }
