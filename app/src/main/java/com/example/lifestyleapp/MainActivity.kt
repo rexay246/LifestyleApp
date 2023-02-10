@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
 
         sliderListener()
 
-        addItemsOnSpinner2();
+        addItemsOnSpinner2()
 
         mButtonSubmit!!.setOnClickListener(this)
         mButtonCamera!!.setOnClickListener(this)
