@@ -247,6 +247,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener{
             }
         }
     }
+
     private val cameraActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result ->
         if (result.resultCode == RESULT_OK) {
             val extras = result.data!!.extras
