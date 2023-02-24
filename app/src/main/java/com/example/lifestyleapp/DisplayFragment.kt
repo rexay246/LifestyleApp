@@ -3,12 +3,14 @@ package com.example.lifestyleapp
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.icu.text.DecimalFormat
+import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.loader.content.AsyncTaskLoader
 
 class DisplayFragment : Fragment(), View.OnClickListener{
     private var mTvFirstName: TextView? = null
@@ -31,6 +33,10 @@ class DisplayFragment : Fragment(), View.OnClickListener{
     private var data_sender : SendDataInterface? = null
 
     private var choice: Double? = null
+
+    private var str_location: String? = null
+
+    val API: String = "9faee2c5de2d26f2d04a0a1be8d67d9c"
 
     interface SendDataInterface {
         fun sendDataBack(data: Array<String?>?)
@@ -64,6 +70,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
             str_filepath = savedInstanceState.getString("filepath")
             str_bmr = savedInstanceState.getString("bmr_data")
             str_activity = savedInstanceState.getString("calorie_data")
+            str_location = savedInstanceState.getString("location_data")
         } else {
             val argumentBundle = arguments
             str_first_name = argumentBundle!!.getString("first_name")
@@ -72,6 +79,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
             str_bmr = argumentBundle.getString("bmr_data")
             str_activity = argumentBundle.getString("calorie_data")
             mSpinActivityChoice!!.setSelection(argumentBundle.getString("activity_data")!!.toDouble().toInt())
+            str_location = argumentBundle.getString("location_data")
         }
         mTvFirstName!!.text = str_first_name
         mTvBmrData!!.text = str_bmr
@@ -132,6 +140,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         outState.putString("filepath", str_filepath)
         outState.putString("bmr_data", str_bmr)
         outState.putString("activity_data", str_activity)
+        outState.putString("location_data", str_location)
         super.onSaveInstanceState(outState)
     }
 }

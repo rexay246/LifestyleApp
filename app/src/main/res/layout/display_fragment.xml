@@ -11,149 +11,215 @@
         android:orientation="vertical" >
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@drawable/box">
+            android:orientation="vertical" >
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_weight="1"
                 android:background="@drawable/box">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_weight="1"
                     android:background="@drawable/box">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:background="@drawable/box">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:id="@+id/iv_pp"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:id="@+id/iv_pp"/>
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:background="@drawable/box">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hello, "
+                                android:layout_weight='0'
+                                android:textSize="18sp"
+                                android:id="@+id/tv_hello"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:layout_weight='0'
+                                tools:text="First"
+                                android:textSize="18sp"
+                                android:id="@+id/tv_fn_data"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=" "
+                                android:layout_weight='0'
+                                android:textSize="18sp"
+                                android:id="@+id/tv_space"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:background="@drawable/box">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="BMR: "
+                                android:layout_weight='0'
+                                android:textSize="18sp"
+                                android:id="@+id/tv_bmr"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:layout_weight='0'
+                                android:textSize="18sp"
+                                android:id="@+id/tv_bmr_data"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:background="@drawable/box">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Needed Calories: "
+                                android:layout_weight='0'
+                                android:textSize="18sp"
+                                android:id="@+id/tv_activity"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text=""
+                                android:layout_weight='0'
+                                android:textSize="18sp"
+                                android:id="@+id/tv_activity_data"/>
+
+                        </LinearLayout>
+
+                        <Spinner
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight='1'
+                            android:id="@+id/spinner_activity_level"
+                            android:textAlignment="center"
+                            android:entries="@array/activity_level"
+                            android:prompt="@string/activity_level_prompt"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:padding="10dp">
+                    android:layout_weight="0">
 
-                    <LinearLayout
+                    <Button
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:background="@drawable/box">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Hello, "
-                            android:layout_weight='0'
-                            android:textSize="18sp"
-                            android:id="@+id/tv_hello"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:layout_weight='0'
-                            tools:text="First"
-                            android:textSize="18sp"
-                            android:id="@+id/tv_fn_data"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=" "
-                            android:layout_weight='0'
-                            android:textSize="18sp"
-                            android:id="@+id/tv_space"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:background="@drawable/box">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="BMR: "
-                            android:layout_weight='0'
-                            android:textSize="18sp"
-                            android:id="@+id/tv_bmr"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:layout_weight='0'
-                            android:textSize="18sp"
-                            android:id="@+id/tv_bmr_data"/>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:background="@drawable/box">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Needed Calories: "
-                            android:layout_weight='0'
-                            android:textSize="18sp"
-                            android:id="@+id/tv_activity"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:layout_weight='0'
-                            android:textSize="18sp"
-                            android:id="@+id/tv_activity_data"/>
-
-                    </LinearLayout>
-
-                    <Spinner
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight='1'
-                        android:id="@+id/spinner_activity_level"
-                        android:textAlignment="center"
-                        android:entries="@array/activity_level"
-                        android:prompt="@string/activity_level_prompt"/>
-
+                        android:text="Edit User"
+                        android:id="@+id/btn_edit_user"
+                        android:layout_gravity="right"
+                        android:padding="10dp"/>
                 </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="0">
+        </LinearLayout>
 
-                <Button
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/box">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Edit User"
-                    android:id="@+id/btn_edit_user"
-                    android:layout_gravity="right"
-                    android:padding="10dp"/>
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:background="@drawable/box"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text=""
+                            tools:text="200"
+                            android:layout_weight='1'
+                            android:textSize="40sp"
+                            android:id="@+id/tv_weather"
+                            android:textAlignment="center"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="C"
+                            android:layout_weight='2'
+                            android:textSize="40sp"
+                            android:id="@+id/tv_C"
+                            android:textAlignment="center"/>
+
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Get Weather"
+                        android:id="@+id/btn_weather"
+                        android:layout_gravity="right"
+                        android:padding="10dp"
+                        android:layout_weight="0"/>
+
+                </LinearLayout>
+
+
             </LinearLayout>
 
         </LinearLayout>
-
 
     </LinearLayout>
 

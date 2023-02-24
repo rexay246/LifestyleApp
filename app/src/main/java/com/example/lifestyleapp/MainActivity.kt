@@ -123,6 +123,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         sendData.putString("bmr_data", mbr)
         sendData.putString("activity_data", activity_level)
         sendData.putString("calorie_data", calorie_intake)
+        sendData.putString("location_data", location)
         displayFragment!!.arguments = sendData
 
         transaction.replace(R.id.fragment_holder, displayFragment!!, "display_fragment")
