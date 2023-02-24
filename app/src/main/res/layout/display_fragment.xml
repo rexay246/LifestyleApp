@@ -14,128 +14,146 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="5dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/iv_pp"/>
+            android:background="@drawable/box">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="10dp">
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:background="@drawable/box">
 
                 <LinearLayout
-
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:background="@drawable/box">
 
-                    <TextView
+                    <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hello, "
-                        android:layout_weight='0'
-                        android:textSize="18sp"
-                        android:id="@+id/tv_hello"/>
+                        android:layout_gravity="center"
+                        android:id="@+id/iv_pp"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:layout_weight='0'
-                        tools:text="First"
-                        android:textSize="18sp"
-                        android:id="@+id/tv_fn_data"/>
+                </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" "
-                        android:layout_weight='0'
-                        android:textSize="18sp"
-                        android:id="@+id/tv_space"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:background="@drawable/box">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hello, "
+                            android:layout_weight='0'
+                            android:textSize="18sp"
+                            android:id="@+id/tv_hello"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_weight='0'
+                            tools:text="First"
+                            android:textSize="18sp"
+                            android:id="@+id/tv_fn_data"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" "
+                            android:layout_weight='0'
+                            android:textSize="18sp"
+                            android:id="@+id/tv_space"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:background="@drawable/box">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="BMR: "
+                            android:layout_weight='0'
+                            android:textSize="18sp"
+                            android:id="@+id/tv_bmr"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_weight='0'
+                            android:textSize="18sp"
+                            android:id="@+id/tv_bmr_data"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:background="@drawable/box">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Needed Calories: "
+                            android:layout_weight='0'
+                            android:textSize="18sp"
+                            android:id="@+id/tv_activity"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_weight='0'
+                            android:textSize="18sp"
+                            android:id="@+id/tv_activity_data"/>
+
+                    </LinearLayout>
+
+                    <Spinner
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text=""
-                        android:layout_weight='0'
-                        tools:text="Second"
+                        android:layout_weight='1'
+                        android:id="@+id/spinner_activity_level"
                         android:textAlignment="center"
-                        android:textSize="18sp"
-                        android:id="@+id/tv_ln_data"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="BMR: "
-                        android:layout_weight='0'
-                        android:textSize="18sp"
-                        android:id="@+id/tv_bmr"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:layout_weight='0'
-                        android:textSize="18sp"
-                        android:id="@+id/tv_bmr_data"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Needed Calories: "
-                        android:layout_weight='0'
-                        android:textSize="18sp"
-                        android:id="@+id/tv_activity"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:layout_weight='0'
-                        android:textSize="18sp"
-                        android:id="@+id/tv_activity_data"/>
+                        android:entries="@array/activity_level"
+                        android:prompt="@string/activity_level_prompt"/>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit User"
-                android:id="@+id/btn_edit_user"
-                android:layout_weight="1"
-                android:padding="10dp"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="0">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Edit User"
+                    android:id="@+id/btn_edit_user"
+                    android:layout_gravity="right"
+                    android:padding="10dp"/>
+            </LinearLayout>
+
         </LinearLayout>
+
 
     </LinearLayout>
 

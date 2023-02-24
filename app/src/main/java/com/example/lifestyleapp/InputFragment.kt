@@ -1,29 +1,49 @@
 package com.example.lifestyleapp
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.icu.text.DecimalFormat
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.location.LocationProvider
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.slider.Slider
+import com.vmadalin.easypermissions.EasyPermissions
+import com.vmadalin.easypermissions.dialogs.SettingsDialog
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
+import java.math.RoundingMode
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
-class InputFragment : Fragment(), View.OnClickListener {
+class InputFragment : Fragment(), View.OnClickListener,
+    EasyPermissions.PermissionCallbacks, LocationListener {
     private var mFullName: String? = null
     private var mFirstName: String? = null
     private var mLastName: String? = null
@@ -31,7 +51,11 @@ class InputFragment : Fragment(), View.OnClickListener {
     private var mButtonSubmit: Button? = null
     private var mEtFullName: EditText? = null
 
-    private var mSpinCity: Spinner? = null
+    private var mButtonLocation: Button? = null
+    private var latitude: Double? = null
+    private var longitude: Double? = null
+    private var current_location: String? = null
+    private var mTvLocation: TextView? = null
 
     private var mSliderValue: TextView? = null
     private var mSlider: SeekBar? = null
@@ -62,6 +86,11 @@ class InputFragment : Fragment(), View.OnClickListener {
     private var mIvPic: ImageView? = null
 
     private var data_sender : SendDataInterface? = null
+    private lateinit var locationManager: LocationManager
+
+    companion object {
+        const val PERMISSION_LOCATION_REQUEST = 1
+    }
 
     interface SendDataInterface {
         fun sendData(data: Array<String?>?)
@@ -107,15 +136,60 @@ class InputFragment : Fragment(), View.OnClickListener {
 
         mActivity = view.findViewById(R.id.spinner_activity_level) as Spinner
 
-        sliderListener()
+        mButtonLocation = view.findViewById(R.id.button_map) as Button
+        mTvLocation = view.findViewById(R.id.tv_current_location) as TextView
 
-        addItemsOnSpinner2(view)
+        locationManager = this.requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        sliderListener()
 
         mButtonSubmit!!.setOnClickListener(this)
         mButtonCamera!!.setOnClickListener(this)
+        mButtonLocation!!.setOnClickListener(this)
 
         if (savedInstanceState != null) {
             mFilepath = savedInstanceState.getString("image_path")
+            mThumbnail = BitmapFactory.decodeFile(mFilepath)
+            mIvPic!!.setImageBitmap(mThumbnail)
+            current_location = savedInstanceState.getString("location_data")
+            mTvLocation!!.text = current_location
+        }
+        else {
+            val arguments = arguments
+            if (arguments != null) {
+                mEtFullName!!.setText(arguments.getString("full_name"))
+
+                if (arguments.getString("sex_data") == "male") {
+                    mRadioGroup!!.check(R.id.rad_male)
+                }
+                else {
+                    mRadioGroup!!.check(R.id.rad_female)
+                }
+
+                val weight = arguments.getString("weight_data")!!
+                mWeightSlider!!.progress = weight.toDouble().toInt()
+                mWeightValue!!.text = weight
+
+                val feet = arguments.getString("feet_data")!!
+                mFeetSlider!!.progress = feet.toDouble().toInt()
+                mFeetValue!!.text = feet
+
+                val inch = arguments.getString("inch_data")!!
+                mInchSlider!!.progress = inch.toDouble().toInt()
+                mInchValue!!.text = inch
+
+                val age = arguments.getString("age_data")!!
+                mSlider!!.progress = age.toDouble().toInt()
+                mSliderValue!!.text = age
+
+                mActivity!!.setSelection(arguments.getString("activity_data")!!.toDouble().toInt())
+
+                mTvLocation!!.text = arguments.getString("location_data")!!
+
+                mFilepath = arguments.getString("image_data")
+                mThumbnail = BitmapFactory.decodeFile(mFilepath)
+                mIvPic!!.setImageBitmap(mThumbnail)
+            }
         }
 
         return view
@@ -181,21 +255,47 @@ class InputFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun addItemsOnSpinner2(view: View) {
-        mSpinCity = view.findViewById(R.id.spinner_city) as Spinner
-        val list: ArrayList<String> = ArrayList()
-        list.add("list 1")
-        list.add("list 2")
-        list.add("list 3")
-        val dataAdapter = ArrayAdapter(
-            view.context,
-            android.R.layout.simple_spinner_item,
-            list
+    private fun hasLocationPermission() =
+        EasyPermissions.hasPermissions(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
         )
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        mSpinCity?.adapter = dataAdapter
+
+    private fun requestLocationPermission() {
+        EasyPermissions.requestPermissions(
+            this,
+            "Need to provide a location",
+            PERMISSION_LOCATION_REQUEST,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            SettingsDialog.Builder(requireActivity()).build().show()
+        } else {
+            requestLocationPermission()
+        }
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        Toast.makeText(
+            requireContext(),
+            "Permission Granted",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    @SuppressLint("MissingPermission")
     override fun onClick(view: View) {
         when (view.id) {
             R.id.button_submit -> {
@@ -209,6 +309,7 @@ class InputFragment : Fragment(), View.OnClickListener {
                 mActivityChoice = mActivity?.selectedItemPosition.toString().toInt()
 
                 val bundleList = mutableListOf<String?>()
+                val df = DecimalFormat("#.###")
 
                 //Check if the EditText string is empty
                 if (mFullName.isNullOrBlank()) {
@@ -234,21 +335,30 @@ class InputFragment : Fragment(), View.OnClickListener {
 
                             bundleList.add(mFirstName)
                             bundleList.add(mLastName)
+                            bundleList.add(mFullName)
                         }
                     }
                 }
 
                 when (mRadioGroup!!.checkedRadioButtonId) {
-                    R.id.rad_male ->
+                    R.id.rad_male -> {
                         mMbr = 66 + (6.2 * mWeight!!) +
                                 (12.7 * (12 * mFeet!! + mInch!!)) -
                                 (6.76 * mAge!!)
-                    R.id.rad_female ->
+                        bundleList.add("male")
+                    }
+                    R.id.rad_female -> {
                         mMbr = 655.1 + (4.35 * mWeight!!) +
                                 (4.7 * (12 * mFeet!! + mInch!!)) -
                                 (4.7 * mAge!!)
+                        bundleList.add("female")
+                    }
                 }
-                bundleList.add(mMbr.toString())
+                bundleList.add(mWeight.toString())
+                bundleList.add(mFeet.toString())
+                bundleList.add(mInch.toString())
+                bundleList.add(mAge.toString())
+                bundleList.add(df.format(mMbr).toString())
 
                 when (mActivityChoice) {
                     1 ->
@@ -262,7 +372,12 @@ class InputFragment : Fragment(), View.OnClickListener {
                     5 ->
                         mCalorieIntake = mMbr!! * 1.9
                 }
-                bundleList.add(mCalorieIntake.toString())
+                bundleList.add(mActivityChoice.toString())
+                bundleList.add(df.format(mCalorieIntake).toString())
+
+                if (mTvLocation != null) {
+                    bundleList.add(mTvLocation!!.text.toString())
+                }
 
                 if (mFilepath != null) {
                     bundleList.add(mFilepath)
@@ -275,6 +390,14 @@ class InputFragment : Fragment(), View.OnClickListener {
                     cameraActivity.launch(cameraIntent)
                 } catch (ex: ActivityNotFoundException) {
                     /////
+                }
+            }
+            R.id.button_map -> {
+                if (hasLocationPermission()) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        1L,1.0f, this)
+                } else {
+                    requestLocationPermission()
                 }
             }
         }
@@ -322,7 +445,32 @@ class InputFragment : Fragment(), View.OnClickListener {
         }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString("image_data", mFilepath)
+        outState.putString("image_path", mFilepath)
+        outState.putString("location_data", current_location)
         super.onSaveInstanceState(outState)
+    }
+
+    override fun onLocationChanged(location: Location) {
+        val geocoder = Geocoder(requireContext())
+        latitude = location.latitude
+        longitude = location.longitude
+        val currentLocation = geocoder.getFromLocation(
+            latitude!!,
+            longitude!!,
+            1)
+
+        if (currentLocation!!.first().countryName == "United States") {
+            mTvLocation!!.text = currentLocation!!.first().subAdminArea + ", " +
+                    currentLocation!!.first().adminArea + ", " +
+                    currentLocation!!.first().countryName
+        }
+        else {
+            mTvLocation!!.text = currentLocation!!.first().adminArea + ", " +
+                    currentLocation!!.first().countryName
+        }
+
+        current_location = mTvLocation!!.text.toString()
+
+        locationManager.removeUpdates(this)
     }
 }

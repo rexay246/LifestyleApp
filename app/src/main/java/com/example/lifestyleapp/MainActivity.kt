@@ -15,11 +15,20 @@ import java.io.FileOutputStream
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface {
+class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
+    DisplayFragment.SendDataInterface {
     private var first_name: String? = null
     private var last_name: String? = null
+    private var full_name: String? = null
+    private var sex: String? = null
+    private var weight: String? = null
+    private var feet: String? = null
+    private var inch: String? = null
+    private var age: String? = null
     private var mbr: String? = null
+    private var activity_level: String? = null
     private var calorie_intake: String? = null
+    private var location: String? = null
     private var filepath: String? = null
 
     private var inputFragment: InputFragment? = null
@@ -61,15 +70,48 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface {
     override fun sendData(data: Array<String?>?) {
         first_name = data!![0]
         last_name = data[1]
-        mbr = data[2]
-        calorie_intake = data[3]
-        filepath = data[4]
+        full_name = data[2]
+        sex = data[3]
+        weight = data[4]
+        feet = data[5]
+        inch = data[6]
+        age = data[7]
+        mbr = data[8]
+        activity_level = data[9]
+        calorie_intake = data[10]
+        location = data[11]
+        filepath = data[12]
 
         displayFragment = DisplayFragment()
         createDisplayFragment()
 
         checkDisplayFragment = true
         checkInputFragment = false
+    }
+
+    override fun sendDataBack(data: Array<String?>?) {
+        inputFragment = InputFragment()
+        activity_level = data!![0]
+        val transaction = supportFragmentManager.beginTransaction()
+        val sendDataBack = Bundle()
+
+        sendDataBack.putString("full_name", full_name)
+        sendDataBack.putString("sex_data", sex)
+        sendDataBack.putString("weight_data", weight)
+        sendDataBack.putString("feet_data", feet)
+        sendDataBack.putString("inch_data", inch)
+        sendDataBack.putString("age_data", age)
+        sendDataBack.putString("activity_data", activity_level)
+        sendDataBack.putString("location_data", location)
+        sendDataBack.putString("image_data", filepath)
+        inputFragment!!.arguments = sendDataBack
+
+        transaction.replace(R.id.fragment_holder, inputFragment!!, "input_fragment")
+        transaction.addToBackStack(null)
+        transaction.commit()
+
+        checkDisplayFragment = false
+        checkInputFragment = true
     }
 
     fun createDisplayFragment() {
@@ -79,7 +121,8 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface {
         sendData.putString("last_name", last_name)
         sendData.putString("filepath", filepath)
         sendData.putString("bmr_data", mbr)
-        sendData.putString("activity_data", calorie_intake)
+        sendData.putString("activity_data", activity_level)
+        sendData.putString("calorie_data", calorie_intake)
         displayFragment!!.arguments = sendData
 
         transaction.replace(R.id.fragment_holder, displayFragment!!, "display_fragment")

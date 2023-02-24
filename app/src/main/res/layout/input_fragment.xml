@@ -13,27 +13,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="5dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/iv_pp"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Make a Profile Picture"
-                android:layout_gravity="center"
-                android:id="@+id/btn_pp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="10dp">
 
@@ -89,50 +68,45 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:orientation="vertical">
 
-            <TextView
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight='1'
+                android:padding="10dp">
+
+                <TextView
+                    android:background="@drawable/box"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text=""
+                    tools:text="test, test"
+                    android:layout_weight='2'
+                    android:layout_marginRight="8dp"
+                    android:textSize="18dp"
+                    android:textAlignment="center"
+                    android:id="@+id/tv_current_location"/>
+
+            </LinearLayout>
+
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Location : "
-                android:layout_weight='0'
-                android:layout_marginRight="8dp"
-                android:textSize="18dp"
-                android:id="@+id/tv_location"/>
-
-            <Spinner
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Get Location"
                 android:layout_weight='1'
-                android:id="@+id/spinner_city"
-                android:textAlignment="center"/>
+                android:id="@+id/button_map" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=","
-                android:layout_weight='0'
-                android:layout_marginRight="8dp"
-                android:textSize="18dp"
-                android:id="@+id/tv_seperator"/>
-
-            <Spinner
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:layout_weight='1'
-                android:id="@+id/spinner_country"
-                android:textAlignment="center"
-                android:entries="@array/countries"
-                android:prompt="@string/country_prompt"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="10dp">
+            android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -332,15 +306,38 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:background="@drawable/box"
+                android:id="@+id/iv_pp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Make a Profile Picture"
+                android:layout_gravity="center"
+                android:id="@+id/btn_pp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="submit"
                 android:id="@+id/button_submit"
-                android:layout_weight="1"
+                android:layout_gravity="center"
                 android:padding="10dp"/>
+
         </LinearLayout>
 
     </LinearLayout>
