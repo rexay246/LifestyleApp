@@ -1,8 +1,11 @@
 package com.example.lifestyleapp
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.icu.text.DecimalFormat
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -36,6 +39,10 @@ class DisplayFragment : Fragment(), View.OnClickListener{
 
     private var str_location: String? = null
 
+    //Hike variables
+    private var mButtonHike: Button? = null
+    private var mSearchString: String? = "Find Hikes Near Me"
+
     val API: String = "9faee2c5de2d26f2d04a0a1be8d67d9c"
 
     interface SendDataInterface {
@@ -63,6 +70,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         mIvPic = view.findViewById(R.id.iv_pp) as ImageView
         mEditButton = view.findViewById(R.id.btn_edit_user) as Button
         mSpinActivityChoice = view.findViewById(R.id.spinner_activity_level) as Spinner
+        mButtonHike = view.findViewById(R.id.btn_findhikes) as Button
 
         if (savedInstanceState != null) {
             str_first_name = savedInstanceState.getString("first_data")
@@ -93,6 +101,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         spinnerLister()
 
         mEditButton!!.setOnClickListener(this)
+        mButtonHike!!.setOnClickListener(this)
 
         return view
     }
@@ -103,6 +112,17 @@ class DisplayFragment : Fragment(), View.OnClickListener{
                 val bundleList = mutableListOf<String?>()
                 bundleList.add(choice.toString())
                 data_sender!!.sendDataBack(bundleList.toTypedArray())
+            }
+            R.id.btn_findhikes ->{
+                val searchUri = Uri.parse("geo:40.767778,-111.845205?q=$mSearchString")
+                //Create the implicit intent
+                val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
+                //If there's an activity associated with this intent, launch it
+                try{
+                    startActivity(mapIntent)
+                }catch(ex: ActivityNotFoundException){
+                    //handle errors here
+                }
             }
         }
     }

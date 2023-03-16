@@ -14,6 +14,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationProvider
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -85,6 +86,7 @@ class InputFragment : Fragment(), View.OnClickListener,
     private var mFilepath: String? = null
     private var mIvPic: ImageView? = null
 
+
     private var data_sender : SendDataInterface? = null
     private lateinit var locationManager: LocationManager
 
@@ -112,6 +114,7 @@ class InputFragment : Fragment(), View.OnClickListener,
         mEtFullName = view.findViewById(R.id.et_name) as EditText
 
         mButtonSubmit = view.findViewById(R.id.button_submit) as Button
+
         mButtonCamera = view.findViewById(R.id.btn_pp) as Button
 
         mFeetSlider = view.findViewById(R.id.slider_feet) as SeekBar
@@ -142,6 +145,7 @@ class InputFragment : Fragment(), View.OnClickListener,
         locationManager = this.requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         sliderListener()
+
 
         mButtonSubmit!!.setOnClickListener(this)
         mButtonCamera!!.setOnClickListener(this)
