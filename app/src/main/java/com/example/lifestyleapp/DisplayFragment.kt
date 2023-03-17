@@ -30,6 +30,8 @@ class DisplayFragment : Fragment(), View.OnClickListener{
     private var str_activity: String? = null
 
     private var mEditButton: Button? = null
+    private var mWeatherButton: Button? = null
+
 
     private var mSpinActivityChoice: Spinner? = null
 
@@ -47,6 +49,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
 
     interface SendDataInterface {
         fun sendDataBack(data: Array<String?>?)
+        fun sendDataWeather(data: Array<String?>?)
     }
 
     override fun onAttach(context: Context) {
@@ -69,6 +72,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         mTvActivityData = view.findViewById(R.id.tv_activity_data) as TextView
         mIvPic = view.findViewById(R.id.iv_pp) as ImageView
         mEditButton = view.findViewById(R.id.btn_edit_user) as Button
+        mWeatherButton = view.findViewById(R.id.btn_weather) as Button
         mSpinActivityChoice = view.findViewById(R.id.spinner_activity_level) as Spinner
         mButtonHike = view.findViewById(R.id.btn_findhikes) as Button
 
@@ -102,6 +106,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
 
         mEditButton!!.setOnClickListener(this)
         mButtonHike!!.setOnClickListener(this)
+        mWeatherButton!!.setOnClickListener(this)
 
         return view
     }
@@ -123,6 +128,10 @@ class DisplayFragment : Fragment(), View.OnClickListener{
                 }catch(ex: ActivityNotFoundException){
                     //handle errors here
                 }
+            }
+            R.id.btn_weather -> {
+                val bundleList = mutableListOf<String?>()
+                data_sender!!.sendDataWeather(bundleList.toTypedArray())
             }
         }
     }
