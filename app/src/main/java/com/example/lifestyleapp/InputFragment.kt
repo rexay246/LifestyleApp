@@ -307,6 +307,9 @@ class InputFragment : Fragment(), View.OnClickListener,
                 mInch = mInchValue!!.text.toString().toDouble()
 
                 mActivityChoice = mActivity?.selectedItemPosition.toString().toInt()
+                if(mActivityChoice == null){
+                    mActivityChoice = 0
+                }
 
                 val bundleList = mutableListOf<String?>()
                 val df = DecimalFormat("#.###")
@@ -377,6 +380,9 @@ class InputFragment : Fragment(), View.OnClickListener,
 
                 if (mTvLocation != null) {
                     bundleList.add(mTvLocation!!.text.toString())
+                    bundleList.add(longitude.toString())
+                    bundleList.add(latitude.toString())
+
                 }
 
                 if (mFilepath != null) {

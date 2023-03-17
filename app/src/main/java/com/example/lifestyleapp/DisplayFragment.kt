@@ -27,6 +27,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
     private var str_activity: String? = null
 
     private var mEditButton: Button? = null
+    private var mWeatherButton: Button? = null
 
     private var mSpinActivityChoice: Spinner? = null
 
@@ -40,6 +41,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
 
     interface SendDataInterface {
         fun sendDataBack(data: Array<String?>?)
+        fun sendDataWeather(data: Array<String?>?)
     }
 
     override fun onAttach(context: Context) {
@@ -62,6 +64,8 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         mTvActivityData = view.findViewById(R.id.tv_activity_data) as TextView
         mIvPic = view.findViewById(R.id.iv_pp) as ImageView
         mEditButton = view.findViewById(R.id.btn_edit_user) as Button
+        mWeatherButton = view.findViewById(R.id.btn_weather) as Button
+
         mSpinActivityChoice = view.findViewById(R.id.spinner_activity_level) as Spinner
 
         if (savedInstanceState != null) {
@@ -71,6 +75,8 @@ class DisplayFragment : Fragment(), View.OnClickListener{
             str_bmr = savedInstanceState.getString("bmr_data")
             str_activity = savedInstanceState.getString("calorie_data")
             str_location = savedInstanceState.getString("location_data")
+
+
         } else {
             val argumentBundle = arguments
             str_first_name = argumentBundle!!.getString("first_name")
@@ -80,6 +86,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
             str_activity = argumentBundle.getString("calorie_data")
             mSpinActivityChoice!!.setSelection(argumentBundle.getString("activity_data")!!.toDouble().toInt())
             str_location = argumentBundle.getString("location_data")
+
         }
         mTvFirstName!!.text = str_first_name
         mTvBmrData!!.text = str_bmr
@@ -93,6 +100,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         spinnerLister()
 
         mEditButton!!.setOnClickListener(this)
+        mWeatherButton!!.setOnClickListener(this)
 
         return view
     }
@@ -103,6 +111,10 @@ class DisplayFragment : Fragment(), View.OnClickListener{
                 val bundleList = mutableListOf<String?>()
                 bundleList.add(choice.toString())
                 data_sender!!.sendDataBack(bundleList.toTypedArray())
+            }
+            R.id.btn_weather -> {
+                val bundleList = mutableListOf<String?>()
+                data_sender!!.sendDataWeather(bundleList.toTypedArray())
             }
         }
     }

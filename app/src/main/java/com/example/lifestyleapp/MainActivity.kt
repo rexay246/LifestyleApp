@@ -16,7 +16,7 @@ import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
-    DisplayFragment.SendDataInterface {
+    DisplayFragment.SendDataInterface,  WeatherFragment.SendDataInterface{
     private var first_name: String? = null
     private var last_name: String? = null
     private var full_name: String? = null
@@ -33,8 +33,10 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
 
     private var inputFragment: InputFragment? = null
     private var displayFragment: DisplayFragment? = null
+    private var weatherFragment: WeatherFragment? = null
     private var checkInputFragment: Boolean? = null
     private var checkDisplayFragment: Boolean? = null
+    private var checkWeatherFragment: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         if (savedInstanceState == null) {
             checkInputFragment = true
             checkDisplayFragment = false
+            checkWeatherFragment = false
         }
 
         inputFragment = if (savedInstanceState != null) {
@@ -56,6 +59,13 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
             DisplayFragment()
         }
 
+        weatherFragment = if (savedInstanceState != null) {
+            supportFragmentManager.findFragmentByTag("weather_fragment") as WeatherFragment?
+        } else {
+            WeatherFragment()
+        }
+
+
         if (checkInputFragment == true) {
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.fragment_holder, inputFragment!!, "input_fragment")
@@ -65,28 +75,35 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         else if (checkDisplayFragment == true) {
             createDisplayFragment()
         }
+        else if (checkWeatherFragment == true){
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_holder, weatherFragment!!, "weather_fragment")
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
     }
 
     override fun sendData(data: Array<String?>?) {
-        first_name = data!![0]
-        last_name = data[1]
-        full_name = data[2]
-        sex = data[3]
-        weight = data[4]
-        feet = data[5]
-        inch = data[6]
-        age = data[7]
-        mbr = data[8]
-        activity_level = data[9]
-        calorie_intake = data[10]
-        location = data[11]
-        filepath = data[12]
+            first_name = data!![0]
+            last_name = data[1]
+            full_name = data[2]
+            sex = data[3]
+            weight = data[4]
+            feet = data[5]
+            inch = data[6]
+            age = data[7]
+            mbr = data[8]
+            activity_level = data[9]
+            calorie_intake = data[10]
+            location = data[11]
+            filepath = data[12]
 
-        displayFragment = DisplayFragment()
-        createDisplayFragment()
+            displayFragment = DisplayFragment()
+            createDisplayFragment()
 
-        checkDisplayFragment = true
-        checkInputFragment = false
+            checkDisplayFragment = true
+            checkInputFragment = false
+            checkWeatherFragment = false
     }
 
     override fun sendDataBack(data: Array<String?>?) {
@@ -110,9 +127,41 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         transaction.addToBackStack(null)
         transaction.commit()
 
+        checkWeatherFragment = false
         checkDisplayFragment = false
         checkInputFragment = true
     }
+
+    override fun sendDataWeather(data: Array<String?>?) {
+        weatherFragment = WeatherFragment()
+        val transaction = supportFragmentManager.beginTransaction()
+        val sendData = Bundle()
+        sendData.putString("location_data", location)
+        weatherFragment!!.arguments = sendData
+
+        transaction.replace(R.id.fragment_holder, weatherFragment!!, "weather_fragment")
+        transaction.addToBackStack(null)
+        transaction.commit()
+
+        checkWeatherFragment = true
+        checkDisplayFragment = false
+        checkInputFragment = false
+    }
+
+//    override fun sendDataBackWeather(data: Array<String?>?) {
+//        displayFragment = DisplayFragment()
+//        val transaction = supportFragmentManager.beginTransaction()
+//
+//        transaction.replace(R.id.fragment_holder, displayFragment!!, "display_fragment")
+//        transaction.popBackStack();
+//        transaction.addToBackStack(null)
+//        transaction.commit()
+//
+//        checkDisplayFragment = true
+//        checkInputFragment = false
+//        checkWeatherFragment = false
+//    }
+
 
     fun createDisplayFragment() {
         val transaction = supportFragmentManager.beginTransaction()
@@ -134,6 +183,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean("display_data", checkDisplayFragment!!)
         outState.putBoolean("input_data", checkInputFragment!!)
+        outState.putBoolean("weather_data", checkInputFragment!!)
 
         super.onSaveInstanceState(outState)
     }
@@ -141,6 +191,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         checkInputFragment = savedInstanceState.getBoolean("input_data")
         checkDisplayFragment = savedInstanceState.getBoolean("display_data")
+        checkWeatherFragment = savedInstanceState.getBoolean("weather_data")
 
         super.onRestoreInstanceState(savedInstanceState)
     }
