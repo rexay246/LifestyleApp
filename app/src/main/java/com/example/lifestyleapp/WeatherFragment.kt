@@ -15,8 +15,9 @@ import java.net.URL
 class WeatherFragment : Fragment(), View.OnClickListener{
 
     private var data_sender : SendDataInterface? = null
-    private var textBox : TextView? = null
-    private var backButton : Button? = null
+    private var tempTextBox : TextView? = null
+    private var cityTextBox : TextView? = null
+    //private var backButton : Button? = null
     private var location: String? = null
 
     private var str_location: String? = null
@@ -42,10 +43,14 @@ class WeatherFragment : Fragment(), View.OnClickListener{
     ): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.weather_fragment, container, false)
-        textBox = view.findViewById(R.id.tempText) as TextView
+        tempTextBox = view.findViewById(R.id.tempText) as TextView
+        cityTextBox = view.findViewById(R.id.ctiyText) as TextView
+
         val argumentBundle = arguments
         location = argumentBundle!!.getString("location_data")
         location = location!!.substring(0, location!!.indexOf(","))
+
+        cityTextBox!!.text = location
         //backButton = view.findViewById(R.id.backButton) as Button
         WeatherTask().execute()
 
@@ -92,7 +97,7 @@ class WeatherFragment : Fragment(), View.OnClickListener{
                 val main = jsonObj.getJSONObject("main")
                 val temp = main.getString("temp")
 
-                textBox!!.text = temp + "°F";
+                tempTextBox!!.text = temp + "°F";
 
             }
             catch (e: Exception){
