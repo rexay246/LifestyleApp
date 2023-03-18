@@ -6,11 +6,74 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_holder"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/input_fragment" />
+        android:background="@drawable/box"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/box"
+            android:orientation="vertical"
+            android:layout_weight="0"
+            android:padding="5dp">
+
+            <Button
+                android:id="@+id/btn_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Home" />
+
+            <Button
+                android:id="@+id/btn_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Edit" />
+
+            <Button
+                android:id="@+id/btn_hike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Hikes" />
+
+            <Button
+                android:id="@+id/btn_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Weather" />
+
+            <Button
+                android:id="@+id/btn_users"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Users" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/box"
+            android:orientation="horizontal"
+            android:layout_weight="0">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragment_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout="@layout/input_fragment" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
 

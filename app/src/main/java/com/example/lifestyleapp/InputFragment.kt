@@ -330,11 +330,12 @@ class InputFragment : Fragment(), View.OnClickListener,
 
                     when (splitstrings.size) {
                         1 -> {
-                            Toast.makeText(
-                                activity,
-                                "Enter both first and last name",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            mFirstName = splitstrings[0]
+                            mLastName = ""
+
+                            bundleList.add(mFirstName)
+                            bundleList.add(mLastName)
+                            bundleList.add(mFullName)
                         }
                         else -> {
                             mFirstName = splitstrings[0]
@@ -345,6 +346,21 @@ class InputFragment : Fragment(), View.OnClickListener,
                             bundleList.add(mFullName)
                         }
                     }
+                }
+
+                if (mWeight!! == 0.0) {
+                    Toast.makeText(activity, "Enter a valid weight", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                if (mFeet!! == 0.0 && mInch!! == 0.0) {
+                    Toast.makeText(activity, "Enter a valid height", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                if (mAge!! == 0.0) {
+                    Toast.makeText(activity, "Enter a valid age", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 when (mRadioGroup!!.checkedRadioButtonId) {
@@ -367,30 +383,46 @@ class InputFragment : Fragment(), View.OnClickListener,
                 bundleList.add(mAge.toString())
                 bundleList.add(df.format(mMbr).toString())
 
-                when (mActivityChoice) {
-                    1 ->
-                        mCalorieIntake = mMbr!! * 1.2
-                    2 ->
-                        mCalorieIntake = mMbr!! * 1.375
-                    3 ->
-                        mCalorieIntake = mMbr!! * 1.55
-                    4 ->
-                        mCalorieIntake = mMbr!! * 1.725
-                    5 ->
-                        mCalorieIntake = mMbr!! * 1.9
+                if (mActivityChoice == 0) {
+                    Toast.makeText(activity, "Please select an activity choice", Toast.LENGTH_SHORT)
+                        .show()
                 }
-                bundleList.add(mActivityChoice.toString())
-                bundleList.add(df.format(mCalorieIntake).toString())
+                else {
+                    when (mActivityChoice) {
+                        1 ->
+                            mCalorieIntake = mMbr!! * 1.2
+                        2 ->
+                            mCalorieIntake = mMbr!! * 1.375
+                        3 ->
+                            mCalorieIntake = mMbr!! * 1.55
+                        4 ->
+                            mCalorieIntake = mMbr!! * 1.725
+                        5 ->
+                            mCalorieIntake = mMbr!! * 1.9
+                    }
+                    bundleList.add(mActivityChoice.toString())
+                    bundleList.add(df.format(mCalorieIntake).toString())
+                }
 
                 if (mTvLocation != null) {
                     bundleList.add(mTvLocation!!.text.toString())
                     bundleList.add(longitude.toString())
                     bundleList.add(latitude.toString())
-
+                }
+                else {
+                    Toast.makeText(activity, "Please enter a location", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 if (mFilepath != null) {
                     bundleList.add(mFilepath)
+                }
+                else {
+                    Toast.makeText(activity, "Please submit a photo", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+                if (bundleList.size == 15) {
                     data_sender!!.sendData(bundleList.toTypedArray())
                 }
             }

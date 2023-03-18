@@ -15,10 +15,12 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.loader.content.AsyncTaskLoader
 
-class DisplayFragment : Fragment(), View.OnClickListener{
+class DisplayFragment : Fragment(){
     private var mTvFirstName: TextView? = null
     private var str_first_name: String? = null
     private var str_last_name: String? = null
+    private var str_longitude: String? = null
+    private var str_latitude: String? = null
 
     private var mIvPic: ImageView? = null
     private var str_filepath: String? = null
@@ -29,10 +31,6 @@ class DisplayFragment : Fragment(), View.OnClickListener{
     private var mTvActivityData: TextView? = null
     private var str_activity: String? = null
 
-    private var mEditButton: Button? = null
-    private var mWeatherButton: Button? = null
-
-
     private var mSpinActivityChoice: Spinner? = null
 
     private var data_sender : SendDataInterface? = null
@@ -40,12 +38,6 @@ class DisplayFragment : Fragment(), View.OnClickListener{
     private var choice: Double? = null
 
     private var str_location: String? = null
-
-    //Hike variables
-    private var mButtonHike: Button? = null
-    private var mSearchString: String? = "Find Hikes Near Me"
-
-    val API: String = "9faee2c5de2d26f2d04a0a1be8d67d9c"
 
     interface SendDataInterface {
         fun sendDataBack(data: Array<String?>?)
@@ -71,10 +63,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         mTvBmrData = view.findViewById(R.id.tv_bmr_data) as TextView
         mTvActivityData = view.findViewById(R.id.tv_activity_data) as TextView
         mIvPic = view.findViewById(R.id.iv_pp) as ImageView
-        mEditButton = view.findViewById(R.id.btn_edit_user) as Button
-        mWeatherButton = view.findViewById(R.id.btn_weather) as Button
         mSpinActivityChoice = view.findViewById(R.id.spinner_activity_level) as Spinner
-        mButtonHike = view.findViewById(R.id.btn_findhikes) as Button
 
         if (savedInstanceState != null) {
             str_first_name = savedInstanceState.getString("first_data")
@@ -83,6 +72,8 @@ class DisplayFragment : Fragment(), View.OnClickListener{
             str_bmr = savedInstanceState.getString("bmr_data")
             str_activity = savedInstanceState.getString("calorie_data")
             str_location = savedInstanceState.getString("location_data")
+            str_longitude = savedInstanceState.getString("longitude_data")
+            str_latitude = savedInstanceState.getString("latitude_data")
         } else {
             val argumentBundle = arguments
             str_first_name = argumentBundle!!.getString("first_name")
@@ -92,6 +83,8 @@ class DisplayFragment : Fragment(), View.OnClickListener{
             str_activity = argumentBundle.getString("calorie_data")
             mSpinActivityChoice!!.setSelection(argumentBundle.getString("activity_data")!!.toDouble().toInt())
             str_location = argumentBundle.getString("location_data")
+            str_longitude = argumentBundle.getString("longitude_data")
+            str_latitude = argumentBundle.getString("latitude_data")
         }
         mTvFirstName!!.text = str_first_name
         mTvBmrData!!.text = str_bmr
@@ -104,36 +97,7 @@ class DisplayFragment : Fragment(), View.OnClickListener{
 
         spinnerLister()
 
-        mEditButton!!.setOnClickListener(this)
-        mButtonHike!!.setOnClickListener(this)
-        mWeatherButton!!.setOnClickListener(this)
-
         return view
-    }
-
-    override fun onClick(view: View) {
-        when (view.id) {
-            R.id.btn_edit_user -> {
-                val bundleList = mutableListOf<String?>()
-                bundleList.add(choice.toString())
-                data_sender!!.sendDataBack(bundleList.toTypedArray())
-            }
-            R.id.btn_findhikes ->{
-                val searchUri = Uri.parse("geo:40.767778,-111.845205?q=$mSearchString")
-                //Create the implicit intent
-                val mapIntent = Intent(Intent.ACTION_VIEW, searchUri)
-                //If there's an activity associated with this intent, launch it
-                try{
-                    startActivity(mapIntent)
-                }catch(ex: ActivityNotFoundException){
-                    //handle errors here
-                }
-            }
-            R.id.btn_weather -> {
-                val bundleList = mutableListOf<String?>()
-                data_sender!!.sendDataWeather(bundleList.toTypedArray())
-            }
-        }
     }
 
     private fun spinnerLister() {
@@ -170,6 +134,8 @@ class DisplayFragment : Fragment(), View.OnClickListener{
         outState.putString("bmr_data", str_bmr)
         outState.putString("activity_data", str_activity)
         outState.putString("location_data", str_location)
+        outState.putString("longitude_data", str_longitude)
+        outState.putString("latitude_data", str_latitude)
         super.onSaveInstanceState(outState)
     }
 }
