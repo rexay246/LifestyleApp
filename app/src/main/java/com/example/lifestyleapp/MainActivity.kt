@@ -53,7 +53,11 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
     private var btnweather: Button? = null
     private var btnusers: Button? = null
 
+    private var positionData: Int = -1
+
     private var newUser: Boolean = true
+
+    private var saved: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,14 +151,23 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btn_home -> {
-                if (!newUser)
+                if (!saved) {
+                    Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
+                }
+                else if (!newUser) {
+                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
                     createDisplayFragment()
+                }
                 else {
                     Toast.makeText(this,"No User Found. Please make an account!", Toast.LENGTH_SHORT).show()
                 }
             }
             R.id.btn_hike -> {
-                if (!newUser) {
+                if (!saved) {
+                    Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
+                }
+                else if (!newUser) {
+                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
                     val mSearchString = "Find Hikes Near $location"
                     val searchUri = Uri.parse("geo:$longitude,$latitude?q=$mSearchString")
                     //Create the implicit intent
@@ -171,7 +184,11 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
                 }
             }
             R.id.btn_weather -> {
-                if (!newUser) {
+                if (!saved) {
+                    Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
+                }
+                else if (!newUser) {
+                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
                     val bundleList = mutableListOf<String?>()
                     sendDataWeather(bundleList.toTypedArray())
                 }
@@ -181,22 +198,29 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
             }
             R.id.btn_edit -> {
                 if (!newUser) {
+                    saved = false
                     val bundleList = mutableListOf<String?>()
-                    sendDataBack(bundleList.toTypedArray())
+                    sendBack(bundleList.toTypedArray())
                 }
                 else {
                     Toast.makeText(this,"No User Found. Please make an account!", Toast.LENGTH_SHORT).show()
                 }
             }
             R.id.btn_users -> {
-                userListFragment = UserListFragment()
-                val fragmentBundle = Bundle()
-                fragmentBundle.putParcelable("user_list", mCustomListData)
-                userListFragment!!.arguments = fragmentBundle
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.fragment_holder, userListFragment!!, "userlist_fragment")
-                transaction.addToBackStack(null)
-                transaction.commit()
+                if (!saved) {
+                    Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
+                    userListFragment = UserListFragment()
+                    val fragmentBundle = Bundle()
+                    fragmentBundle.putParcelable("user_list", mCustomListData)
+                    userListFragment!!.arguments = fragmentBundle
+                    val transaction = supportFragmentManager.beginTransaction()
+                    transaction.replace(R.id.fragment_holder, userListFragment!!, "userlist_fragment")
+                    transaction.addToBackStack(null)
+                    transaction.commit()
+                }
             }
         }
     }
@@ -217,9 +241,17 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         longitude = data[12]
         latitude = data[13]
         filepath = data[14]
+        if (data[15] == "true") {
+            saved = true
+        }
 
-        if (newUser)
+        if (newUser) {
             mCustomListData.setItem(data)
+            positionData += 1
+        }
+        else {
+            mCustomListData.updateItem(data, positionData)
+        }
 
         createDisplayFragment()
 
@@ -229,9 +261,14 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         checkInputFragment = false
         checkWeatherFragment = false
         checkListFragment = false
+
     }
 
     override fun sendDataBack(data: Array<String?>?) {
+        activity_level = data!![0]
+    }
+
+    fun sendBack(data: Array<String?>?) {
         inputFragment = InputFragment()
         val transaction = supportFragmentManager.beginTransaction()
         val sendDataBack = Bundle()
@@ -370,7 +407,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
             latitude = "0"
 
             val bundleList = mutableListOf<String?>()
-            sendDataBack(bundleList.toTypedArray())
+            sendBack(bundleList.toTypedArray())
             newUser = true
         }
         else {
@@ -391,6 +428,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
             latitude = data[13]
             filepath = data[14]
             createDisplayFragment()
+            positionData = position - 1
         }
     }
 

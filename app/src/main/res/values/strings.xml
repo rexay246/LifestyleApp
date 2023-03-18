@@ -241,6 +241,15 @@
         <item>Active lifestyle</item>
         <item>Very Active lifestyle</item>
     </string-array>
+
+    <string name="activity_level_prompt2">Choose an activity level</string>
+    <string-array name="activity_level2" formatted="false" translatable="false">
+        <item>Sedentary: little or no exercise</item>
+        <item>Slightly active exercise or job</item>
+        <item>Moderately active exercise or job</item>
+        <item>Active lifestyle</item>
+        <item>Very Active lifestyle</item>
+    </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

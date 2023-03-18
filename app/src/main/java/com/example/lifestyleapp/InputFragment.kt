@@ -86,6 +86,8 @@ class InputFragment : Fragment(), View.OnClickListener,
     private var mFilepath: String? = null
     private var mIvPic: ImageView? = null
 
+    private var unchangeSaves: Boolean = false
+
 
     private var data_sender : SendDataInterface? = null
     private lateinit var locationManager: LocationManager
@@ -429,6 +431,8 @@ class InputFragment : Fragment(), View.OnClickListener,
                 }
 
                 if (bundleList.size == 15) {
+                    unchangeSaves = true
+                    bundleList.add(unchangeSaves.toString())
                     data_sender!!.sendData(bundleList.toTypedArray())
                 }
             }

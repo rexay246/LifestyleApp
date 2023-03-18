@@ -34,7 +34,7 @@ class UserListFragment : Fragment() {
         mRecyclerView!!.layoutManager = layoutManager
 
         //Get data from main activity
-        val customListData = requireArguments().getParcelable("user_list", UsersData::class.java)
+        val customListData = requireArguments().getParcelable<UsersData>("user_list")
         val inputList = customListData!!.itemList
         val picList = customListData.picList
 

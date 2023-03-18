@@ -138,8 +138,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight='1'
-                            android:entries="@array/activity_level"
-                            android:prompt="@string/activity_level_prompt"
+                            android:entries="@array/activity_level2"
+                            android:prompt="@string/activity_level_prompt2"
                             android:textAlignment="center" />
 
                     </LinearLayout>

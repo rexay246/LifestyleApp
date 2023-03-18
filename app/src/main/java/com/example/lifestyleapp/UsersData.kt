@@ -114,6 +114,29 @@ class UsersData: Parcelable {
         itemList[14]?.let { list_filepath!!.add(it) }
     }
 
+    fun updateItem(itemList: Array<String?>?, position: Int) {
+        itemList!![2]?.let { mUserList!!.set(position + 1, it) }
+        itemList[0]?.let { list_first_name!!.set(position, it) }
+        itemList[1]?.let { list_last_name!!.set(position, it)}
+        itemList[2]?.let { list_full_name!!.set(position, it) }
+        itemList[3]?.let { list_sex!!.set(position, it) }
+        itemList[4]?.let { list_weight!!.set(position, it) }
+        itemList[5]?.let { list_feet!!.set(position, it) }
+        itemList[6]?.let { list_inch!!.set(position, it) }
+        itemList[7]?.let { list_age!!.set(position, it) }
+        itemList[8]?.let { list_mbr!!.set(position, it) }
+        itemList[9]?.let { list_activity_level!!.set(position, it) }
+        itemList[10]?.let { list_calorie_intake!!.set(position, it)}
+        itemList[11]?.let { list_location!!.set(position, it) }
+        itemList[12]?.let { list_longitude!!.set(position, it) }
+        itemList[13]?.let { list_latitude!!.set(position, it) }
+        itemList[14]?.let { list_filepath!!.set(position, it)}
+    }
+
+    fun updateItemChoice(newChoice: String, position: Int) {
+        list_activity_level!![position] = newChoice
+    }
+
     //Implement getter for item details at a position
     fun getItemDetail(position: Int): MutableList<String> {
         val list = mutableListOf<String>()

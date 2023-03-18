@@ -81,7 +81,7 @@ class DisplayFragment : Fragment(){
             str_filepath = argumentBundle.getString("filepath")
             str_bmr = argumentBundle.getString("bmr_data")
             str_activity = argumentBundle.getString("calorie_data")
-            mSpinActivityChoice!!.setSelection(argumentBundle.getString("activity_data")!!.toDouble().toInt())
+            mSpinActivityChoice!!.setSelection(argumentBundle.getString("activity_data")!!.toDouble().toInt() - 1)
             str_location = argumentBundle.getString("location_data")
             str_longitude = argumentBundle.getString("longitude_data")
             str_latitude = argumentBundle.getString("latitude_data")
@@ -106,7 +106,7 @@ class DisplayFragment : Fragment(){
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                when (position) {
+                when (position + 1) {
                     1 ->
                         str_activity = (str_bmr!!.toDouble() * 1.2).toString()
                     2 ->
@@ -118,7 +118,11 @@ class DisplayFragment : Fragment(){
                     5 ->
                         str_activity = (str_bmr!!.toDouble() * 1.9).toString()
                 }
-                choice = position.toDouble()
+
+                choice = position.toDouble() + 1
+                val bundleList = mutableListOf<String?>()
+                bundleList.add(choice.toString())
+                data_sender!!.sendDataBack(bundleList.toTypedArray())
 
                 val df = DecimalFormat("#.###")
                 mTvActivityData!!.text = df.format(str_activity!!.toDouble())
