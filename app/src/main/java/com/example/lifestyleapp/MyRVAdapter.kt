@@ -1,14 +1,16 @@
 package com.example.lifestyleapp
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.TextView
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import java.lang.ClassCastException
 
-class MyRVAdapter(private val mListItems: MutableList<String>) :
+class MyRVAdapter(private val mListItems: MutableList<String>, private val picList: MutableList<String>) :
     RecyclerView.Adapter<MyRVAdapter.ViewHolder>() {
     private var mContext: Context? = null
     private var mDataPasser: ListPasser? = null
@@ -17,6 +19,7 @@ class MyRVAdapter(private val mListItems: MutableList<String>) :
         itemLayout
     ) {
         var itemTvData: TextView = itemLayout.findViewById<View>(R.id.tv_user) as TextView
+        var itemIv : ImageView = itemLayout.findViewById<View>(R.id.iv_pp) as ImageView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,6 +36,8 @@ class MyRVAdapter(private val mListItems: MutableList<String>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.itemTvData.text = mListItems[holder.adapterPosition]
+        if (holder.adapterPosition != 0)
+            holder.itemIv.setImageBitmap(BitmapFactory.decodeFile(picList[holder.adapterPosition - 1]))
         holder.itemLayout.setOnClickListener { mDataPasser!!.passListData(holder.adapterPosition) }
     }
 

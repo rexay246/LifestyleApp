@@ -356,7 +356,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
             first_name = ""
             last_name = ""
             full_name = ""
-            sex = "1"
+            sex = "male"
             weight = "0"
             feet = "0"
             inch = "0"

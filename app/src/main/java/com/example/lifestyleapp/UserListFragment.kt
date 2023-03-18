@@ -36,9 +36,10 @@ class UserListFragment : Fragment() {
         //Get data from main activity
         val customListData = requireArguments().getParcelable("user_list", UsersData::class.java)
         val inputList = customListData!!.itemList
+        val picList = customListData.picList
 
         //Set the adapter
-        mAdapter = MyRVAdapter(inputList!!)
+        mAdapter = MyRVAdapter(inputList!!, picList!!)
         mRecyclerView!!.adapter = mAdapter
         return fragmentView
     }

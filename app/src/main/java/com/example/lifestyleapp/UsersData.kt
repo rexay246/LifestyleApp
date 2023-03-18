@@ -92,6 +92,9 @@ class UsersData: Parcelable {
     val itemList: MutableList<String>?
         get() = mUserList
 
+    val picList: MutableList<String>?
+        get() = list_filepath
+
     fun setItem(itemList: Array<String?>?) {
         itemList!![2]?.let { mUserList!!.add(it) }
         itemList[0]?.let { list_first_name!!.add(it) }
