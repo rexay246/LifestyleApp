@@ -1,5 +1,6 @@
 package com.example.lifestyleapp
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.AsyncTask
 import android.os.Bundle
@@ -17,12 +18,14 @@ class WeatherFragment : Fragment(), View.OnClickListener{
     private var data_sender : SendDataInterface? = null
     private var tempTextBox : TextView? = null
     private var cityTextBox : TextView? = null
-    //private var backButton : Button? = null
+    private var descTextBox: TextView? = null
+    private var humTextBos: TextView? = null
+    private var windTexBox: TextView? = null
     private var location: String? = null
 
     private var str_location: String? = null
 
-    val apiKey: String = "39866961fc4cbc2c09fc4bee1ceb454b"
+    val apiKey: String = "f36b0d473419f1af3f06e013ee376e00"
 
     interface SendDataInterface {
         fun sendData(data: Array<String?>?)
@@ -45,17 +48,22 @@ class WeatherFragment : Fragment(), View.OnClickListener{
         val view = inflater.inflate(R.layout.weather_fragment, container, false)
         tempTextBox = view.findViewById(R.id.tempText) as TextView
         cityTextBox = view.findViewById(R.id.ctiyText) as TextView
+        descTextBox = view.findViewById(R.id.descriptionText) as TextView
+        humTextBos = view.findViewById(R.id.humidityText) as TextView
+        windTexBox = view.findViewById(R.id.windText) as TextView
 
         val argumentBundle = arguments
         location = argumentBundle!!.getString("location_data")
         location = location!!.substring(0, location!!.indexOf(","))
 
         cityTextBox!!.text = location
-        //backButton = view.findViewById(R.id.backButton) as Button
+
+        tempTextBox!!.text = "Loading..."
+        descTextBox!!.text = "Loading..."
+        humTextBos!!.text = "Loading..."
+        windTexBox!!.text = "Loading..."
+
         WeatherTask().execute()
-
-        //backButton!!.setOnClickListener(this)
-
         return view
     }
 
@@ -79,7 +87,7 @@ class WeatherFragment : Fragment(), View.OnClickListener{
             var response:String?
 
             try{
-                response = URL("https://api.openweathermap.org/data/2.5/weather?q=$location,us&units=imperial&appid=$apiKey")
+                response = URL("https://api.openweathermap.org/data/2.5/weather?q=$location&units=imperial&appid=$apiKey")
                     .readText(Charsets.UTF_8)
             }
             catch(e: Exception){
@@ -94,10 +102,18 @@ class WeatherFragment : Fragment(), View.OnClickListener{
 
             try {
                 val jsonObj = JSONObject(result)
+                val wind = jsonObj.getJSONObject("wind")
+                val weather = jsonObj.getJSONArray("weather").getJSONObject(0)
                 val main = jsonObj.getJSONObject("main")
                 val temp = main.getString("temp")
+                val description = weather.getString("description")
+                val humidity = main.getString("humidity")
+                val speed = wind.getString("speed")
 
-                tempTextBox!!.text = temp + "°F";
+                tempTextBox!!.text = temp + "°F"
+                descTextBox!!.text = description
+                humTextBos!!.text = "Humidity: $humidity%"
+                windTexBox!!.text = "Wind: $speed mph"
 
             }
             catch (e: Exception){

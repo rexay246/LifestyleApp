@@ -405,9 +405,15 @@ class InputFragment : Fragment(), View.OnClickListener,
                 }
 
                 if (mTvLocation != null) {
-                    bundleList.add(mTvLocation!!.text.toString())
-                    bundleList.add(longitude.toString())
-                    bundleList.add(latitude.toString())
+                    if (mTvLocation!!.text == "Loading...") {
+                        Toast.makeText(activity, "Please wait while we find your location", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    else {
+                        bundleList.add(mTvLocation!!.text.toString())
+                        bundleList.add(longitude.toString())
+                        bundleList.add(latitude.toString())
+                    }
                 }
                 else {
                     Toast.makeText(activity, "Please enter a location", Toast.LENGTH_SHORT)
@@ -436,6 +442,7 @@ class InputFragment : Fragment(), View.OnClickListener,
             }
             R.id.button_map -> {
                 if (hasLocationPermission()) {
+                    mTvLocation!!.text = "Loading..."
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         1L,1.0f, this)
                 } else {

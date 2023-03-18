@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#A2D0DC"
     android:orientation="vertical"
-    android:padding="25dp">
+    android:padding="25dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/mainContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="visible"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/addressContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@drawable/box">
 
             <TextView
                 android:id="@+id/ctiyText"
@@ -40,18 +44,53 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:fontFamily="sans-serif-thin"
+                android:fontFamily="sans-serif"
                 android:text=""
-                android:textSize="90dp" />
+                android:textSize="65dp"
+                tools:text="40.40  F"/>
+
+            <TextView
+                android:id="@+id/descriptionText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif"
+                android:text=""
+                android:textSize="30dp"
+                tools:text="Moderate Rain"/>
 
         </LinearLayout>
 
-<!--        <Button-->
-<!--            android:id="@+id/backButton"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:background="@android:color/white"-->
-<!--            android:textColor="@android:color/black"-->
-<!--            android:text="Back" />-->
-    </RelativeLayout>
-</RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/humidityText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif"
+                android:text=""
+                android:textSize="20dp"
+                tools:text="Humidity: 93%"/>
+
+            <TextView
+                android:id="@+id/windText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif"
+                android:text=""
+                android:textSize="20dp"
+                tools:text="Wind: 20 mph"/>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

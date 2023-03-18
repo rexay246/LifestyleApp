@@ -93,7 +93,7 @@ class UsersData: Parcelable {
         get() = mUserList
 
     fun setItem(itemList: Array<String?>?) {
-        itemList!![0]?.let { mUserList!!.add(it) }
+        itemList!![2]?.let { mUserList!!.add(it) }
         itemList[0]?.let { list_first_name!!.add(it) }
         itemList[1]?.let { list_last_name!!.add(it) }
         itemList[2]?.let { list_full_name!!.add(it) }
