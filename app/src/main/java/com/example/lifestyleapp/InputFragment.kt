@@ -439,7 +439,7 @@ class InputFragment : Fragment(), View.OnClickListener,
                         .show()
                 }
 
-                if (mFilepath != null) {
+                if (mFilepath != null && mFilepath != "0") {
                     bundleList.add(mFilepath)
                 }
                 else {
