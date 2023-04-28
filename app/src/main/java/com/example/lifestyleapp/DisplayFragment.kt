@@ -1,5 +1,6 @@
 package com.example.lifestyleapp
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -13,7 +14,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.loader.content.AsyncTaskLoader
+import kotlin.math.roundToInt
 
 class DisplayFragment : Fragment(){
     private var mTvFirstName: TextView? = null
@@ -39,9 +43,11 @@ class DisplayFragment : Fragment(){
 
     private var str_location: String? = null
 
+    private var model: WeatherViewModel? = null
+
     interface SendDataInterface {
-        fun sendDataBack(data: Array<String?>?)
-        fun sendDataWeather(data: Array<String?>?)
+        fun sendDataBack()
+        fun sendDataWeather()
     }
 
     override fun onAttach(context: Context) {
@@ -65,39 +71,38 @@ class DisplayFragment : Fragment(){
         mIvPic = view.findViewById(R.id.iv_pp) as ImageView
         mSpinActivityChoice = view.findViewById(R.id.spinner_activity_level) as Spinner
 
-        if (savedInstanceState != null) {
-            str_first_name = savedInstanceState.getString("first_data")
-            str_last_name = savedInstanceState.getString("last_data")
-            str_filepath = savedInstanceState.getString("filepath")
-            str_bmr = savedInstanceState.getString("bmr_data")
-            str_activity = savedInstanceState.getString("calorie_data")
-            str_location = savedInstanceState.getString("location_data")
-            str_longitude = savedInstanceState.getString("longitude_data")
-            str_latitude = savedInstanceState.getString("latitude_data")
-        } else {
-            val argumentBundle = arguments
-            str_first_name = argumentBundle!!.getString("first_name")
-            str_last_name = argumentBundle.getString("last_name")
-            str_filepath = argumentBundle.getString("filepath")
-            str_bmr = argumentBundle.getString("bmr_data")
-            str_activity = argumentBundle.getString("calorie_data")
-            mSpinActivityChoice!!.setSelection(argumentBundle.getString("activity_data")!!.toDouble().toInt() - 1)
-            str_location = argumentBundle.getString("location_data")
-            str_longitude = argumentBundle.getString("longitude_data")
-            str_latitude = argumentBundle.getString("latitude_data")
-        }
-        mTvFirstName!!.text = str_first_name
-        mTvBmrData!!.text = str_bmr
-        mTvActivityData!!.text = str_activity
-
-        val thumbnailImage = BitmapFactory.decodeFile(str_filepath)
-        if (thumbnailImage != null) {
-            mIvPic!!.setImageBitmap(thumbnailImage)
-        }
-
         spinnerLister()
 
         return view
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        model = ViewModelProvider(requireActivity())[WeatherViewModel::class.java]
+        model!!.userData.observe(viewLifecycleOwner, Observer { userData -> // Update the UI if this data variable changes
+            if (userData != null) {
+
+                str_first_name = userData.first_name
+                str_last_name = userData.last_name
+                str_filepath = userData.filepath
+                str_bmr = userData.mbr
+                str_activity = userData.calorie_intake
+                str_location = userData.location
+                str_longitude = userData.longitude
+                str_latitude = userData.latitude
+                mSpinActivityChoice!!.setSelection(userData.activity_level!!.toDouble().toInt() - 1)
+
+                mTvFirstName!!.text = str_first_name
+                mTvBmrData!!.text = str_bmr
+                mTvActivityData!!.text = str_activity
+
+                val thumbnailImage = BitmapFactory.decodeFile(str_filepath)
+                if (thumbnailImage != null) {
+                    mIvPic!!.setImageBitmap(thumbnailImage)
+                }
+            }
+        })
     }
 
     private fun spinnerLister() {
@@ -122,8 +127,12 @@ class DisplayFragment : Fragment(){
                 choice = position.toDouble() + 1
                 val bundleList = mutableListOf<String?>()
                 bundleList.add(choice.toString())
-                data_sender!!.sendDataBack(bundleList.toTypedArray())
-
+                model!!.userData.observe(viewLifecycleOwner, androidx.lifecycle.Observer { userData -> // Update the UI if this data variable changes
+                    if (userData != null) {
+                        userData.activity_level = choice.toString()
+                    }
+                })
+//                data_sender!!.sendDataBack()
                 val df = DecimalFormat("#.###")
                 mTvActivityData!!.text = df.format(str_activity!!.toDouble())
             }

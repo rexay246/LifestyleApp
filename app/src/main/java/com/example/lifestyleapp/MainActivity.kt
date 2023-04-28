@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -11,16 +12,21 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
+
 
 class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
     DisplayFragment.SendDataInterface,  WeatherFragment.SendDataInterface,
-    MyRVAdapter.ListPasser, View.OnClickListener {
+    View.OnClickListener, UserRVAdapter.ListPasser {
     private var first_name: String? = null
     private var last_name: String? = null
     private var full_name: String? = null
@@ -59,7 +65,12 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
 
     private var saved: Boolean = false
 
+    private val mWeatherViewModel: WeatherViewModel by viewModels {
+        WeatherViewModelFactory((application as WeatherApplication).repository)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        mWeatherViewModel.setLocation("tokyo")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -69,26 +80,12 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         btnweather = findViewById(R.id.btn_weather)
         btnusers = findViewById(R.id.btn_users)
 
+
         if (savedInstanceState == null) {
-            checkInputFragment = true
+            checkInputFragment = false
             checkDisplayFragment = false
             checkWeatherFragment = false
-            checkListFragment = false
-            first_name = ""
-            last_name = ""
-            full_name = ""
-            sex = "1"
-            weight = "0"
-            feet = "0"
-            inch = "0"
-            age = "0"
-            mbr = "0"
-            activity_level = "0"
-            calorie_intake = "0"
-            location= ""
-            filepath = ""
-            longitude = "0"
-            latitude = "0"
+            checkListFragment = true
         }
 
         inputFragment = if (savedInstanceState != null) {
@@ -155,7 +152,6 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
                     Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
                 }
                 else if (!newUser) {
-                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
                     createDisplayFragment()
                 }
                 else {
@@ -167,7 +163,13 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
                     Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
                 }
                 else if (!newUser) {
-                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
+                    mWeatherViewModel.userData.observe(this, androidx.lifecycle.Observer { weatherData ->
+                        if (weatherData != null) {
+                            location = weatherData.location
+                            latitude = weatherData.latitude
+                            longitude = weatherData.longitude
+                        }
+                    })
                     val mSearchString = "Find Hikes Near $location"
                     val searchUri = Uri.parse("geo:$longitude,$latitude?q=$mSearchString")
                     //Create the implicit intent
@@ -188,9 +190,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
                     Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
                 }
                 else if (!newUser) {
-                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
-                    val bundleList = mutableListOf<String?>()
-                    sendDataWeather(bundleList.toTypedArray())
+                    sendDataWeather()
                 }
                 else {
                     Toast.makeText(this,"No User Found. Please make an account!", Toast.LENGTH_SHORT).show()
@@ -199,8 +199,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
             R.id.btn_edit -> {
                 if (!newUser) {
                     saved = false
-                    val bundleList = mutableListOf<String?>()
-                    sendBack(bundleList.toTypedArray())
+                    sendBack()
                 }
                 else {
                     Toast.makeText(this,"No User Found. Please make an account!", Toast.LENGTH_SHORT).show()
@@ -211,11 +210,9 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
                     Toast.makeText(this,"Please save data first", Toast.LENGTH_SHORT).show()
                 }
                 else {
-                    mCustomListData.updateItemChoice(activity_level.toString(), positionData)
+                    // mCustomListData.updateItemChoice(activity_level.toString(), positionData)
                     userListFragment = UserListFragment()
-                    val fragmentBundle = Bundle()
-                    fragmentBundle.putParcelable("user_list", mCustomListData)
-                    userListFragment!!.arguments = fragmentBundle
+
                     val transaction = supportFragmentManager.beginTransaction()
                     transaction.replace(R.id.fragment_holder, userListFragment!!, "userlist_fragment")
                     transaction.addToBackStack(null)
@@ -225,34 +222,8 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         }
     }
 
-    override fun sendData(data: Array<String?>?) {
-        first_name = data!![0]
-        last_name = data[1]
-        full_name = data[2]
-        sex = data[3]
-        weight = data[4]
-        feet = data[5]
-        inch = data[6]
-        age = data[7]
-        mbr = data[8]
-        activity_level = data[9]
-        calorie_intake = data[10]
-        location = data[11]
-        longitude = data[12]
-        latitude = data[13]
-        filepath = data[14]
-        if (data[15] == "true") {
-            saved = true
-        }
-
-        if (newUser) {
-            mCustomListData.setItem(data)
-            positionData += 1
-        }
-        else {
-            mCustomListData.updateItem(data, positionData)
-        }
-
+    override fun sendData() {
+        saved = true
         createDisplayFragment()
 
         newUser = false
@@ -264,25 +235,12 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
 
     }
 
-    override fun sendDataBack(data: Array<String?>?) {
-        activity_level = data!![0]
+    override fun sendDataBack() {
     }
 
-    fun sendBack(data: Array<String?>?) {
+    fun sendBack() {
         inputFragment = InputFragment()
         val transaction = supportFragmentManager.beginTransaction()
-        val sendDataBack = Bundle()
-
-        sendDataBack.putString("full_name", full_name)
-        sendDataBack.putString("sex_data", sex)
-        sendDataBack.putString("weight_data", weight)
-        sendDataBack.putString("feet_data", feet)
-        sendDataBack.putString("inch_data", inch)
-        sendDataBack.putString("age_data", age)
-        sendDataBack.putString("activity_data", activity_level)
-        sendDataBack.putString("location_data", location)
-        sendDataBack.putString("image_data", filepath)
-        inputFragment!!.arguments = sendDataBack
 
         transaction.replace(R.id.fragment_holder, inputFragment!!, "input_fragment")
         transaction.addToBackStack(null)
@@ -294,12 +252,17 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         checkInputFragment = true
     }
 
-    override fun sendDataWeather(data: Array<String?>?) {
+    override fun sendDataWeather() {
+        mWeatherViewModel.userData.observe(this, androidx.lifecycle.Observer { weatherData ->
+            if (weatherData != null) {
+                location = weatherData.location
+            }
+        })
+        val inputFromEt = location.toString().split(",")[0].replace(" ", "%20")
+        mWeatherViewModel.setLocation(inputFromEt)
+
         weatherFragment = WeatherFragment()
         val transaction = supportFragmentManager.beginTransaction()
-        val sendData = Bundle()
-        sendData.putString("location_data", location)
-        weatherFragment!!.arguments = sendData
 
         transaction.replace(R.id.fragment_holder, weatherFragment!!, "weather_fragment")
         transaction.addToBackStack(null)
@@ -313,19 +276,7 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
 
     fun createDisplayFragment() {
         displayFragment = DisplayFragment()
-
         val transaction = supportFragmentManager.beginTransaction()
-        val sendData = Bundle()
-        sendData.putString("first_name", first_name)
-        sendData.putString("last_name", last_name)
-        sendData.putString("filepath", filepath)
-        sendData.putString("bmr_data", mbr)
-        sendData.putString("activity_data", activity_level)
-        sendData.putString("calorie_data", calorie_intake)
-        sendData.putString("location_data", location)
-        sendData.putString("longitude_data", longitude)
-        sendData.putString("latitude_data", latitude)
-        displayFragment!!.arguments = sendData
 
         transaction.replace(R.id.fragment_holder, displayFragment!!, "display_fragment")
         transaction.addToBackStack(null)
@@ -338,22 +289,26 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         outState.putBoolean("weather_data", checkWeatherFragment)
         outState.putBoolean("list_data", checkListFragment)
         outState.putBoolean("new_data", newUser)
+        outState.putInt("position_data", positionData)
+        outState.putBoolean("saved_data", saved)
 
-        outState.putString("first_data", first_name!!)
-        outState.putString("last_data", last_name!!)
-        outState.putString("full_data", full_name!!)
-        outState.putString("sex_data", sex!!)
-        outState.putString("weight_data", weight!!)
-        outState.putString("feet_data", feet!!)
-        outState.putString("inch_data", inch!!)
-        outState.putString("age_data", age!!)
-        outState.putString("mbr_data", mbr!!)
-        outState.putString("activity_data", activity_level!!)
-        outState.putString("calorie_data", calorie_intake!!)
-        outState.putString("location_data", location!!)
-        outState.putString("filepath_data", filepath!!)
-        outState.putString("longitude_data", longitude!!)
-        outState.putString("latitude_data", latitude!!)
+        if (!newUser) {
+            outState.putString("first_data", first_name!!)
+            outState.putString("last_data", last_name!!)
+            outState.putString("full_data", full_name!!)
+            outState.putString("sex_data", sex!!)
+            outState.putString("weight_data", weight!!)
+            outState.putString("feet_data", feet!!)
+            outState.putString("inch_data", inch!!)
+            outState.putString("age_data", age!!)
+            outState.putString("mbr_data", mbr!!)
+            outState.putString("activity_data", activity_level!!)
+            outState.putString("calorie_data", calorie_intake!!)
+            outState.putString("location_data", location!!)
+            outState.putString("filepath_data", filepath!!)
+            outState.putString("longitude_data", longitude!!)
+            outState.putString("latitude_data", latitude!!)
+        }
 
         super.onSaveInstanceState(outState)
     }
@@ -364,6 +319,8 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         checkWeatherFragment = savedInstanceState.getBoolean("weather_data")
         checkListFragment = savedInstanceState.getBoolean("list_data")
         newUser = savedInstanceState.getBoolean("new_data")
+        positionData = savedInstanceState.getInt("position_data")
+        saved = savedInstanceState.getBoolean("saved_data")
 
         first_name = savedInstanceState.getString("first_data")
         last_name = savedInstanceState.getString("last_data")
@@ -388,48 +345,18 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
     }
 
     override fun passListData(position: Int) {
-        //Get the string data corresponding to the detail view
         if (position == 0) {
-            first_name = ""
-            last_name = ""
-            full_name = ""
-            sex = "male"
-            weight = "0"
-            feet = "0"
-            inch = "0"
-            age = "0"
-            mbr = "0"
-            activity_level = "0"
-            calorie_intake = "0"
-            location= ""
-            filepath = ""
-            longitude = "0"
-            latitude = "0"
-
-            val bundleList = mutableListOf<String?>()
-            sendBack(bundleList.toTypedArray())
-            newUser = true
+            mWeatherViewModel.setCurrentPosition(position)
+            saved = false
+            sendBack()
         }
         else {
-            val data = mCustomListData.getItemDetail(position - 1)
-            first_name = data[0]
-            last_name = data[1]
-            full_name = data[2]
-            sex = data[3]
-            weight = data[4]
-            feet = data[5]
-            inch = data[6]
-            age = data[7]
-            mbr = data[8]
-            activity_level = data[9]
-            calorie_intake = data[10]
-            location = data[11]
-            longitude = data[12]
-            latitude = data[13]
-            filepath = data[14]
+            //Get the string data corresponding to the detail view
+            mWeatherViewModel.setCurrentPosition(position)
             createDisplayFragment()
-            positionData = position - 1
+            newUser = false
+            saved = true
         }
+        positionData = position
     }
-
 }

@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.slider.Slider
@@ -88,16 +89,23 @@ class InputFragment : Fragment(), View.OnClickListener,
 
     private var unchangeSaves: Boolean = false
 
+    private var model: WeatherViewModel? = null
 
     private var data_sender : SendDataInterface? = null
     private lateinit var locationManager: LocationManager
+
+    private var position: Int? = null
+    private var weight: String? = null
+    private var feet: String? = null
+    private var inch: String? = null
+    private var age: String? = null
 
     companion object {
         const val PERMISSION_LOCATION_REQUEST = 1
     }
 
     interface SendDataInterface {
-        fun sendData(data: Array<String?>?)
+        fun sendData()
     }
 
     override fun onAttach(context: Context) {
@@ -160,45 +168,54 @@ class InputFragment : Fragment(), View.OnClickListener,
             current_location = savedInstanceState.getString("location_data")
             mTvLocation!!.text = current_location
         }
-        else {
-            val arguments = arguments
-            if (arguments != null) {
-                mEtFullName!!.setText(arguments.getString("full_name"))
 
-                if (arguments.getString("sex_data") == "male") {
+        return view
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        model = ViewModelProvider(requireActivity())[WeatherViewModel::class.java]
+        model!!.userData.observe(viewLifecycleOwner, androidx.lifecycle.Observer { userData -> // Update the UI if this data variable changes
+            if (userData != null) {
+
+                if (userData.full_name == "New User")
+                    mEtFullName!!.setText("")
+                else
+                    mEtFullName!!.setText(userData.full_name)
+
+                if (userData.sex == "male") {
                     mRadioGroup!!.check(R.id.rad_male)
                 }
                 else {
                     mRadioGroup!!.check(R.id.rad_female)
                 }
 
-                val weight = arguments.getString("weight_data")!!
-                mWeightSlider!!.progress = weight.toDouble().toInt()
+                weight = userData.weight!!
+                mWeightSlider!!.progress = weight!!.toDouble().toInt()
                 mWeightValue!!.text = weight
 
-                val feet = arguments.getString("feet_data")!!
-                mFeetSlider!!.progress = feet.toDouble().toInt()
+                feet = userData.feet!!
+                mFeetSlider!!.progress = feet!!.toDouble().toInt()
                 mFeetValue!!.text = feet
 
-                val inch = arguments.getString("inch_data")!!
-                mInchSlider!!.progress = inch.toDouble().toInt()
+                inch = userData.inch!!
+                mInchSlider!!.progress = inch!!.toDouble().toInt()
                 mInchValue!!.text = inch
 
-                val age = arguments.getString("age_data")!!
-                mSlider!!.progress = age.toDouble().toInt()
+                age = userData.age!!
+                mSlider!!.progress = age!!.toDouble().toInt()
                 mSliderValue!!.text = age
 
-                mActivity!!.setSelection(arguments.getString("activity_data")!!.toDouble().toInt())
+                mActivity!!.setSelection(userData.activity_level!!.toDouble().toInt())
 
-                mTvLocation!!.text = arguments.getString("location_data")!!
+                mTvLocation!!.text = userData.location!!
 
-                mFilepath = arguments.getString("image_data")
+                mFilepath = userData.filepath!!
                 mThumbnail = BitmapFactory.decodeFile(mFilepath)
                 mIvPic!!.setImageBitmap(mThumbnail)
             }
-        }
-
-        return view
+        })
     }
 
 
@@ -433,7 +450,14 @@ class InputFragment : Fragment(), View.OnClickListener,
                 if (bundleList.size == 15) {
                     unchangeSaves = true
                     bundleList.add(unchangeSaves.toString())
-                    data_sender!!.sendData(bundleList.toTypedArray())
+
+                    if (model!!.currentPosition == 0) {
+                        model!!.setUserData(bundleList.toTypedArray())
+                    }
+                    else {
+                        model!!.updateUserData(bundleList.toTypedArray())
+                    }
+                    data_sender!!.sendData()
                 }
             }
             R.id.btn_pp -> {

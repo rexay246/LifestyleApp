@@ -27,7 +27,7 @@
                 android:id="@+id/ctiyText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Salt Lake City"
+                tools:text="Salt Lake City"
                 android:textSize="24dp" />
         </LinearLayout>
 
@@ -49,16 +49,6 @@
                 android:textSize="65dp"
                 tools:text="40.40  F"/>
 
-            <TextView
-                android:id="@+id/descriptionText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="sans-serif"
-                android:text=""
-                android:textSize="30dp"
-                tools:text="Moderate Rain"/>
-
         </LinearLayout>
 
 
@@ -67,6 +57,16 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/descText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif"
+                android:text=""
+                android:textSize="20dp"
+                tools:text="Raining"/>
 
             <TextView
                 android:id="@+id/humidityText"
@@ -86,7 +86,7 @@
                 android:fontFamily="sans-serif"
                 android:text=""
                 android:textSize="20dp"
-                tools:text="Wind: 20 mph"/>
+                tools:text="Wind: 200 mph"/>
 
 
         </LinearLayout>
