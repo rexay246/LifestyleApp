@@ -292,24 +292,6 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         outState.putInt("position_data", positionData)
         outState.putBoolean("saved_data", saved)
 
-        if (!newUser) {
-            outState.putString("first_data", first_name!!)
-            outState.putString("last_data", last_name!!)
-            outState.putString("full_data", full_name!!)
-            outState.putString("sex_data", sex!!)
-            outState.putString("weight_data", weight!!)
-            outState.putString("feet_data", feet!!)
-            outState.putString("inch_data", inch!!)
-            outState.putString("age_data", age!!)
-            outState.putString("mbr_data", mbr!!)
-            outState.putString("activity_data", activity_level!!)
-            outState.putString("calorie_data", calorie_intake!!)
-            outState.putString("location_data", location!!)
-            outState.putString("filepath_data", filepath!!)
-            outState.putString("longitude_data", longitude!!)
-            outState.putString("latitude_data", latitude!!)
-        }
-
         super.onSaveInstanceState(outState)
     }
 
@@ -322,21 +304,6 @@ class MainActivity : AppCompatActivity(), InputFragment.SendDataInterface,
         positionData = savedInstanceState.getInt("position_data")
         saved = savedInstanceState.getBoolean("saved_data")
 
-        first_name = savedInstanceState.getString("first_data")
-        last_name = savedInstanceState.getString("last_data")
-        full_name = savedInstanceState.getString("full_data")
-        sex = savedInstanceState.getString("sex_data")
-        weight = savedInstanceState.getString("weight_data")
-        feet = savedInstanceState.getString("feet_data")
-        inch = savedInstanceState.getString("inch_data")
-        age = savedInstanceState.getString("age_data")
-        mbr = savedInstanceState.getString("mbr_data")
-        activity_level = savedInstanceState.getString("activity_data")
-        calorie_intake = savedInstanceState.getString("calorie_data")
-        location = savedInstanceState.getString("location_data")
-        longitude = savedInstanceState.getString("longitude_data")
-        latitude = savedInstanceState.getString("latitude_data")
-        filepath = savedInstanceState.getString("filepath_data")
         super.onRestoreInstanceState(savedInstanceState)
     }
 
